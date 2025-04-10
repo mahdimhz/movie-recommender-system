@@ -1,0 +1,18 @@
+# Ignore dataset files
+data/
+*.csv
+
+# Ignore Python cache
+__pycache__/
+*.py[cod]
+
+# Ignore Jupyter checkpoints
+.ipynb_checkpoints
+
+# Ignore virtual environments
+env/
+venv/
+
+# macOS / Windows OS junk files
+.DS_Store
+Thumbs.db
