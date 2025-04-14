@@ -35,16 +35,31 @@ similarity_matrix = build_model(movies_df)
 # --------------------------------------------------
 # 🎯 User Input & Recommendations
 # --------------------------------------------------
-movie_titles = movies_df['title'].tolist()
-selected_movie = st.selectbox("🎞 Select a Movie", movie_titles)
+# movie_titles = movies_df['title'].tolist()
+# selected_movie = st.selectbox("🎞 Select a Movie", movie_titles)
 
-if st.button("🔍 Show Recommendations"):
-    idx = movies_df[movies_df['title'] == selected_movie].index[0]
+from difflib import get_close_matches
+
+# -----------------------------------------------
+# 🔍 User Search Input
+# -----------------------------------------------
+search_query = st.text_input("🔎 Type a movie name:")
+
+matched_movie = None
+if search_query:
+    matches = get_close_matches(search_query, movie_titles, n=5, cutoff=0.5)
+    if matches:
+        matched_movie = st.selectbox("🎞 Select the closest match:", matches)
+    else:
+        st.warning("No close match found. Try a different title.")
+
+if matched_movie and st.button("🔍 Show Recommendations"):
+    idx = movies_df[movies_df['title'] == matched_movie].index[0]
     sim_scores = list(enumerate(similarity_matrix[idx]))
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-    sim_scores = sim_scores[1:6]  # top 5, excluding the movie itself
+    sim_scores = sim_scores[1:6]
 
     st.subheader("📽️ You might also like:")
     for i, (movie_idx, score) in enumerate(sim_scores):
-        movie_title = movies_df.iloc[movie_idx]['title']
-        st.write(f"{i+1}. {movie_title}  ⭐ Similarity: {score:.2f}")
+        st.write(f"{i+1}. {movies_df.iloc[movie_idx]['title']}  ⭐ Similarity: {score:.2f}")
+
