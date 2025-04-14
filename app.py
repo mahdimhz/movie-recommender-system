@@ -6,8 +6,9 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
 from difflib import get_close_matches
 
-# TMDb API Key
-TMDB_API_KEY = "04e0229676f1ed802c22b266516508b5"
+import os
+TMDB_API_KEY = os.getenv("TMDB_API_KEY")
+
 
 # -----------------------------------------------
 # 📋 Session State Setup
