@@ -9,7 +9,7 @@ from difflib import get_close_matches
 # --------------------------------------------------
 st.set_page_config(page_title="Movie Recommender", layout="centered")
 st.title("🎬 Movie Recommender System (Content-Based)")
-st.write("Type a movie name, and we’ll find similar ones based on genres.")
+st.write("Type a movie name, and we’ll show you similar ones based on genres.")
 
 # --------------------------------------------------
 # 📊 Load Data
@@ -45,9 +45,16 @@ if search_query:
     title_map = {title.lower(): title for title in movie_titles}
     lowered_titles = list(title_map.keys())
 
-    # Get fuzzy matches
     query = search_query.lower()
-    matches_lower = get_close_matches(query, lowered_titles, n=5, cutoff=0.5)
+
+    # First try fuzzy matching
+    matches_lower = get_close_matches(query, lowered_titles, n=5, cutoff=0.4)
+
+    # If fuzzy fails, try partial substring match
+    if not matches_lower:
+        matches_lower = [title for title in lowered_titles if query in title]
+
+    # Convert back to original titles
     matches = [title_map[match] for match in matches_lower]
 
     if matches:
