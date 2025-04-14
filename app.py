@@ -1,64 +1,50 @@
 import streamlit as st
 import pandas as pd
-from surprise import SVD, Dataset, Reader
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import CountVectorizer
 
 # --------------------------------------------------
-# 🎬 Streamlit Page Setup
+# 🎬 Page Setup
 # --------------------------------------------------
 st.set_page_config(page_title="Movie Recommender", layout="centered")
-st.title("🎬 Movie Recommender System")
-st.write("Enter a user ID below to get personalized movie recommendations.")
+st.title("🎬 Movie Recommender System (Content-Based)")
+st.write("Pick a movie, and we'll show you similar ones based on genres.")
 
 # --------------------------------------------------
-# 📥 User Input
-# --------------------------------------------------
-user_id = st.number_input("Enter User ID (1–610)", min_value=1, max_value=610, step=1)
-show_recommend = st.button("🎯 Get Recommendations")
-
-# --------------------------------------------------
-# 📊 Load & Prepare Data
+# 📊 Load Data
 # --------------------------------------------------
 @st.cache_data
 def load_data():
     movies = pd.read_csv("data/movies.csv")
-    ratings = pd.read_csv("data/ratings.csv")
-    df = pd.merge(ratings, movies, on="movieId")
-    return df
+    return movies
 
-df = load_data()
+movies_df = load_data()
 
 # --------------------------------------------------
-# 🧠 Train Model (SVD)
+# 🧠 Build Recommender Model
 # --------------------------------------------------
 @st.cache_resource
-def train_model(dataframe):
-    reader = Reader(rating_scale=(0.5, 5.0))
-    data = Dataset.load_from_df(dataframe[["userId", "movieId", "rating"]], reader)
-    trainset = data.build_full_trainset()
-    model = SVD()
-    model.fit(trainset)
-    return model
+def build_model(data):
+    vectorizer = CountVectorizer(tokenizer=lambda x: x.split('|'), stop_words='english')
+    genre_matrix = vectorizer.fit_transform(data['genres'])
+    similarity = cosine_similarity(genre_matrix)
+    return similarity
 
-model = train_model(df)
+similarity_matrix = build_model(movies_df)
 
 # --------------------------------------------------
-# 🎯 Generate Recommendations
+# 🎯 User Input & Recommendations
 # --------------------------------------------------
-if show_recommend:
-    # Movies the user has already rated
-    rated_movie_ids = df[df['userId'] == user_id]['movieId'].tolist()
-    all_movie_ids = df['movieId'].unique()
-    movies_to_predict = [mid for mid in all_movie_ids if mid not in rated_movie_ids]
+movie_titles = movies_df['title'].tolist()
+selected_movie = st.selectbox("🎞 Select a Movie", movie_titles)
 
-    # Predict ratings
-    predictions = [model.predict(user_id, movie_id) for movie_id in movies_to_predict]
-    top_predictions = sorted(predictions, key=lambda x: x.est, reverse=True)[:5]
+if st.button("🔍 Show Recommendations"):
+    idx = movies_df[movies_df['title'] == selected_movie].index[0]
+    sim_scores = list(enumerate(similarity_matrix[idx]))
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+    sim_scores = sim_scores[1:6]  # top 5, excluding the movie itself
 
-    # Movie titles and predicted ratings
-    top_movie_ids = [pred.iid for pred in top_predictions]
-    top_movies = df[df['movieId'].isin(top_movie_ids)][['movieId', 'title']].drop_duplicates()
-    top_movies['Predicted Rating'] = [round(pred.est, 2) for pred in top_predictions]
-
-    # Show results
-    st.subheader("📽️ Top Recommended Movies:")
-    st.table(top_movies[['title', 'Predicted Rating']].reset_index(drop=True))
+    st.subheader("📽️ You might also like:")
+    for i, (movie_idx, score) in enumerate(sim_scores):
+        movie_title = movies_df.iloc[movie_idx]['title']
+        st.write(f"{i+1}. {movie_title}  ⭐ Similarity: {score:.2f}")
