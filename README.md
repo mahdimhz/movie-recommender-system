@@ -1,4 +1,5 @@
-# 🎬 Movie Recommender System
+# 🎬 Movie Recommender System  
+by [Mahdi](https://github.com/mahdimhz) • [LinkedIn](https://www.linkedin.com/in/mahdimhz)
 
 This is a content-based movie recommender system built using **Streamlit**, **pandas**, and **scikit-learn**.  
 It allows users to search for a movie by name and receive top genre-based recommendations — all in a clean, interactive web app.
