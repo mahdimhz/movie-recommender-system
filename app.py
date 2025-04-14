@@ -19,6 +19,7 @@ def load_data():
     return movies
 
 movies_df = load_data()
+movie_titles = movies_df['title'].tolist()
 
 # --------------------------------------------------
 # 🧠 Build Recommender Model
@@ -35,7 +36,7 @@ similarity_matrix = build_model(movies_df)
 # --------------------------------------------------
 # 🎯 User Input & Recommendations
 # --------------------------------------------------
-# movie_titles = movies_df['title'].tolist()
+
 # selected_movie = st.selectbox("🎞 Select a Movie", movie_titles)
 
 from difflib import get_close_matches
