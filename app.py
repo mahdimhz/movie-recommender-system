@@ -48,10 +48,11 @@ search_query = st.text_input("🔎 Type a movie name:")
 
 matched_movie = None
 if search_query:
-    movie_titles_lower = [title.lower() for title in movie_titles]
+    movie_titles_map = {title.lower(): title for title in movie_titles}
     search_query_lower = search_query.lower()
-    matches_lower = get_close_matches(search_query_lower, movie_titles_lower, n=5, cutoff=0.5)
-    matches = [movie_titles[movie_titles_lower.index(match)] for match in matches_lower]
+    matches_lower = get_close_matches(search_query_lower, list(movie_titles_map.keys()), n=5, cutoff=0.5)
+    matches = [movie_titles_map[match] for match in matches_lower]
+
 
     if matches:
         matched_movie = st.selectbox("🎞 Select the closest match:", matches)
