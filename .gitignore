@@ -1,6 +1,5 @@
 
 # Ignore dataset files
-data/
 *.csv
 
 # Ignore Python cache
