@@ -47,15 +47,18 @@ if search_query:
 
     query = search_query.lower()
 
-    # First try fuzzy matching
+        # First: Try fuzzy matching
     matches_lower = get_close_matches(query, lowered_titles, n=5, cutoff=0.4)
 
-    # If fuzzy fails, try partial substring match
-    if not matches_lower:
-        matches_lower = [title for title in lowered_titles if query in title]
+    # Add substring matches (not limited to 5)
+    partial_matches = [title for title in lowered_titles if query in title]
+
+    # Combine both and remove duplicates
+    combined_matches = list(dict.fromkeys(matches_lower + partial_matches))
+
 
     # Convert back to original titles
-    matches = [title_map[match] for match in matches_lower]
+    matches = [title_map[match] for match in combined_matches]
 
     if matches:
         matched_movie = st.selectbox("🎞 Select the closest match:", matches)
