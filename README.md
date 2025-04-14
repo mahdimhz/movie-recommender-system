@@ -1,65 +1,40 @@
 # 🎬 Movie Recommender System
 
-This project builds a Netflix-style movie recommendation system using real-world data and collaborative filtering.
+This is a content-based movie recommender system built using **Streamlit**, **pandas**, and **scikit-learn**.  
+It allows users to search for a movie by name and receive top genre-based recommendations — all in a clean, interactive web app.
 
-It uses the MovieLens dataset to train a model that can predict how users might rate movies they haven't seen — and recommend new films.
-
----
-
-## 📌 What It Does
-
-- Loads and explores the MovieLens 100k dataset
-- Analyzes most-rated and top-rated movies
-- Builds a collaborative filtering model using SVD from the Surprise library
-- Recommends top movies to each user based on their past behavior
+👉 **Live Demo:** [Try it now](https://mahdimhz-movie-recommender-system.streamlit.app)
 
 ---
 
-## 💻 Tools Used
+## 🔍 How It Works
 
-- Python
-- Jupyter Notebook
-- Pandas, Matplotlib
-- Surprise (SVD recommender)
+- Users type part of a movie name (e.g. `dark`, `shaw`, `lord`)
+- The app uses **fuzzy + partial matching** to help them find the right title
+- Based on selected movie’s genres, it recommends the top 5 most similar movies
 
----
-
-## 🧠 Highlights
-
-- RMSE: ~0.87  
-- MAE: ~0.67  
-- 100k+ ratings, 9k+ movies, 610 users
+### 🔢 Similarity Score
+Each recommendation includes a **similarity score** from `0.0` to `1.0`:
+- `1.00` → Perfect match (same genre structure)
+- `0.00` → No genre overlap  
+The score is computed using **cosine similarity** on genre vectors.
 
 ---
 
-## 🔍 Example: Recommendations for User 1
+## 🧠 Technologies Used
 
-- Shawshank Redemption
-- The Departed
-- The Dark Knight Rises
-- Wallace & Gromit
-- The Thing
-
----
-
-## 📈 Bonus Analysis: Forrest Gump?
-
-Forrest Gump was the most rated movie in the dataset — but didn’t appear in the top 10.  
-It had a high average rating (4.16) but not high *enough* to beat others that scored 4.23+.
+- Python 3
+- Streamlit
+- Pandas
+- scikit-learn (`CountVectorizer`, `cosine_similarity`)
+- difflib (`get_close_matches`)
 
 ---
 
-## 🚀 What's Next
+## 🛠️ How to Run It Locally
 
-- Try other algorithms (like KNN or SVD++)
-- Add genre-based recommendations
-- Build a simple web app using Streamlit
-
----
-
-## 🙋‍♂️ About Me
-
-I'm Mahdi, a data science master's student passionate about machine learning and building practical AI tools.
-
-👉 [GitHub](https://github.com/mahdimhz)  
-👉 [LinkedIn](https://www.linkedin.com/in/mahdimhz)
+```bash
+git clone https://github.com/mahdimhz/movie-recommender-system.git
+cd movie-recommender-system
+pip install -r requirements.txt
+streamlit run app.py
